@@ -3,7 +3,7 @@
 
 <p>¡Bienvenido a mi página! 
   </br> 
-  Soy Ernesto Aguaysol, desarrollador de <img src="https://image.flaticon.com/icons/svg/197/197573.svg" width="13"/> <b>Buenos Aires, Argentina</b>.
+  Soy Ernesto Aguaysol, desarrollador de <b>Buenos Aires, Argentina</b>.
 </p>
 <h3>Codifico con</h3>
 <p>
