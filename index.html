@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ernesto Aguaysol — Developer & Educator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg:        #0a0c0f;
+      --surface:   #111418;
+      --border:    #1e2530;
+      --green:     #39d353;
+      --cyan:      #58c4dd;
+      --amber:     #e8a317;
+      --red:       #e05c6a;
+      --muted:     #4a5568;
+      --text:      #cdd6f4;
+      --subtext:   #7c8aa2;
+      --mono:      'JetBrains Mono', monospace;
+      --sans:      'Syne', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Scanline overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,.12) 2px,
+        rgba(0,0,0,.12) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── Noise grain ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    /* ── Selection ── */
+    ::selection { background: var(--green); color: var(--bg); }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* ════════════════════════════
+       NAVBAR
+    ════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .8rem 2.5rem;
+      background: rgba(10,12,15,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: .85rem;
+      color: var(--green);
+      letter-spacing: .05em;
+    }
+    .nav-logo span { color: var(--subtext); }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: .75rem;
+      color: var(--subtext);
+      text-decoration: none;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--green); }
+
+    /* ════════════════════════════
+       HERO
+    ════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 8rem 5rem 4rem;
+      gap: 4rem;
+      position: relative;
+    }
+
+    /* Grid background */
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(57,211,83,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(57,211,83,.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse 80% 60% at 70% 50%, black 30%, transparent 80%);
+    }
+
+    .hero-text { position: relative; z-index: 1; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .7rem;
+      color: var(--green);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 10px var(--green);
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: .5; transform: scale(1.4); }
+    }
+
+    .hero-name {
+      font-family: var(--sans);
+      font-size: clamp(2.8rem, 5vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -.02em;
+      color: #fff;
+      margin-bottom: .5rem;
+    }
+    .hero-name .accent { color: var(--green); }
+
+    .hero-title {
+      font-size: .9rem;
+      color: var(--cyan);
+      letter-spacing: .04em;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-desc {
+      font-size: .85rem;
+      color: var(--subtext);
+      max-width: 420px;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-bottom: 2.5rem;
+    }
+    .tag {
+      font-size: .7rem;
+      padding: .25rem .7rem;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--subtext);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      transition: all .2s;
+    }
+    .tag:hover { border-color: var(--green); color: var(--green); }
+    .tag.linux { border-color: rgba(57,211,83,.3); color: var(--green); }
+    .tag.ai    { border-color: rgba(88,196,221,.3); color: var(--cyan); }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      font-family: var(--mono);
+      font-size: .75rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: .65rem 1.4rem;
+      border-radius: 2px;
+      transition: all .2s;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--green);
+      color: var(--bg);
+      border: 1px solid var(--green);
+      font-weight: 700;
+    }
+    .btn-primary:hover { background: transparent; color: var(--green); }
+    .btn-outline {
+      background: transparent;
+      color: var(--subtext);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--subtext); color: var(--text); }
+
+    /* Terminal widget */
+    .hero-terminal {
+      position: relative;
+      z-index: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(57,211,83,.06), 0 40px 80px rgba(0,0,0,.5);
+    }
+
+    .terminal-bar {
+      background: #161b22;
+      padding: .6rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #e05c6a; }
+    .dot.y { background: #e8a317; }
+    .dot.g { background: #39d353; }
+    .terminal-title {
+      margin-left: auto;
+      margin-right: auto;
+      font-size: .7rem;
+      color: var(--muted);
+    }
+
+    .terminal-body {
+      padding: 1.2rem 1.4rem;
+      font-size: .78rem;
+      line-height: 2;
+      min-height: 280px;
+    }
+
+    .t-line { display: flex; gap: .5rem; }
+    .t-prompt { color: var(--green); flex-shrink: 0; }
+    .t-cmd    { color: var(--text); }
+    .t-out    { color: var(--subtext); padding-left: 1rem; }
+    .t-key    { color: var(--cyan); }
+    .t-val    { color: var(--amber); }
+    .t-comment{ color: var(--muted); font-style: italic; }
+
+    .cursor {
+      display: inline-block;
+      width: 8px; height: 1em;
+      background: var(--green);
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink .9s step-end infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* ════════════════════════════
+       SECTION COMMONS
+    ════════════════════════════ */
+    section { padding: 5rem 5rem; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+    .section-num {
+      font-size: .7rem;
+      color: var(--green);
+      letter-spacing: .15em;
+    }
+    .section-title {
+      font-family: var(--sans);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      max-width: 200px;
+    }
+
+    /* ════════════════════════════
+       ABOUT
+    ════════════════════════════ */
+    #about {
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .about-text p {
+      font-size: .88rem;
+      color: var(--subtext);
+      line-height: 1.9;
+      margin-bottom: 1rem;
+    }
+    .about-text p strong { color: var(--text); font-weight: 600; }
+    .about-text p .hl { color: var(--green); }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.2rem;
+      transition: border-color .2s;
+    }
+    .stat-card:hover { border-color: var(--green); }
+    .stat-num {
+      font-family: var(--sans);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--green);
+      line-height: 1;
+      margin-bottom: .3rem;
+    }
+    .stat-label {
+      font-size: .72rem;
+      color: var(--subtext);
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    /* ════════════════════════════
+       SKILLS
+    ════════════════════════════ */
+    #skills { border-top: 1px solid var(--border); }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.4rem;
+      transition: all .25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .skill-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--green);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform .25s;
+    }
+    .skill-card:hover { border-color: rgba(57,211,83,.25); transform: translateY(-2px); }
+    .skill-card:hover::before { transform: scaleY(1); }
+    .skill-card.cyan::before { background: var(--cyan); }
+    .skill-card.cyan:hover   { border-color: rgba(88,196,221,.25); }
+    .skill-card.amber::before { background: var(--amber); }
+    .skill-card.amber:hover   { border-color: rgba(232,163,23,.25); }
+
+    .skill-icon {
+      font-size: 1.4rem;
+      margin-bottom: .8rem;
+    }
+    .skill-name {
+      font-family: var(--sans);
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: .5rem;
+    }
+    .skill-desc {
+      font-size: .76rem;
+      color: var(--subtext);
+      line-height: 1.7;
+    }
+
+    .skill-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .35rem;
+      margin-top: .9rem;
+    }
+    .pill {
+      font-size: .65rem;
+      padding: .15rem .55rem;
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      color: var(--muted);
+      letter-spacing: .04em;
+    }
+
+    /* ════════════════════════════
+       EXPERIENCE / ROLES
+    ════════════════════════════ */
+    #experience { border-top: 1px solid var(--border); }
+
+    .exp-list { display: flex; flex-direction: column; gap: 0; }
+
+    .exp-item {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 2rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--border);
+      transition: background .2s;
+      position: relative;
+    }
+    .exp-item:first-child { border-top: 1px solid var(--border); }
+    .exp-item::before {
+      content: '';
+      position: absolute;
+      left: -5rem; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(var(--green), var(--cyan));
+      opacity: 0;
+      transition: opacity .3s;
+      border-radius: 2px;
+    }
+    .exp-item:hover::before { opacity: 1; }
+
+    .exp-period {
+      font-size: .72rem;
+      color: var(--muted);
+      letter-spacing: .05em;
+      padding-top: .2rem;
+    }
+    .exp-period .org {
+      display: block;
+      color: var(--green);
+      font-size: .7rem;
+      margin-top: .3rem;
+      font-weight: 600;
+    }
+
+    .exp-role {
+      font-family: var(--sans);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: .5rem;
+    }
+    .exp-desc {
+      font-size: .82rem;
+      color: var(--subtext);
+      line-height: 1.8;
+      max-width: 600px;
+    }
+    .exp-desc .hl { color: var(--cyan); }
+
+    /* ════════════════════════════
+       PROJECTS
+    ════════════════════════════ */
+    #projects { border-top: 1px solid var(--border); }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.6rem;
+      transition: all .25s;
+      display: flex;
+      flex-direction: column;
+      gap: .8rem;
+    }
+    .project-card:hover {
+      border-color: rgba(88,196,221,.3);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px rgba(0,0,0,.3);
+    }
+
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .project-icon { font-size: 1.6rem; }
+    .project-link {
+      font-size: .7rem;
+      color: var(--subtext);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: .2rem .6rem;
+      border-radius: 2px;
+      transition: all .2s;
+    }
+    .project-link:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    .project-name {
+      font-family: var(--sans);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .project-desc {
+      font-size: .8rem;
+      color: var(--subtext);
+      line-height: 1.7;
+    }
+    .project-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .35rem;
+      margin-top: auto;
+    }
+
+    /* ════════════════════════════
+       CONTACT
+    ════════════════════════════ */
+    #contact {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 5rem;
+    }
+
+    .contact-eyebrow {
+      font-size: .72rem;
+      color: var(--green);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .contact-title {
+      font-family: var(--sans);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 1rem;
+      line-height: 1.1;
+    }
+    .contact-sub {
+      font-size: .88rem;
+      color: var(--subtext);
+      max-width: 480px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.8;
+    }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .78rem;
+      color: var(--subtext);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: .65rem 1.2rem;
+      border-radius: 2px;
+      letter-spacing: .06em;
+      transition: all .2s;
+    }
+    .contact-link:hover { border-color: var(--green); color: var(--green); }
+    .contact-link svg { width: 16px; height: 16px; }
+
+    /* ════════════════════════════
+       FOOTER
+    ════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer .f-left {
+      font-size: .7rem;
+      color: var(--muted);
+    }
+    footer .f-left span { color: var(--green); }
+    footer .f-right {
+      font-size: .7rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+
+    /* ════════════════════════════
+       ANIMATIONS
+    ════════════════════════════ */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ════════════════════════════
+       RESPONSIVE
+    ════════════════════════════ */
+    @media (max-width: 900px) {
+      nav { padding: .8rem 1.5rem; }
+      .nav-links { gap: 1.2rem; }
+
+      #hero {
+        grid-template-columns: 1fr;
+        padding: 7rem 2rem 3rem;
+        gap: 2.5rem;
+      }
+      #hero::before { mask-image: none; opacity: .3; }
+      .hero-terminal { max-width: 100%; }
+
+      #about {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        padding: 3rem 2rem;
+      }
+
+      section { padding: 3rem 2rem; }
+
+      .skills-grid { grid-template-columns: 1fr 1fr; }
+      .projects-grid { grid-template-columns: 1fr; }
+
+      .exp-item { grid-template-columns: 1fr; gap: .5rem; }
+      .exp-period { display: flex; gap: 1rem; align-items: center; }
+      .exp-period .org { margin-top: 0; }
+
+      footer { flex-direction: column; gap: .5rem; padding: 1.5rem 2rem; }
+
+      #contact { padding: 3rem 2rem; }
+    }
+
+    @media (max-width: 600px) {
+      .skills-grid { grid-template-columns: 1fr; }
+      .hero-name { font-size: 2.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav>
+    <div class="nav-logo"><span>~/</span>ernesto_aguaysol</div>
+    <ul class="nav-links">
+      <li><a href="#about">Sobre mí</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#experience">Roles</a></li>
+      <li><a href="#projects">Proyectos</a></li>
+      <li><a href="#contact">Contacto</a></li>
+    </ul>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section id="hero">
+    <div class="hero-text fade-in">
+      <div class="hero-badge">disponible para colaborar</div>
+      <h1 class="hero-name">Ernesto<br><span class="accent">Aguaysol</span></h1>
+      <p class="hero-title">// Developer · Educator · Free Software Advocate</p>
+      <p class="hero-desc">
+        Coordinador de sistemas de información, profesor universitario de IA y Business Intelligence.
+        Linuxero convencido, entusiasta del software libre y explorador de la IA soberana.
+      </p>
+      <div class="hero-tags">
+        <span class="tag linux">🐧 Linux</span>
+        <span class="tag ai">🤖 IA Generativa</span>
+        <span class="tag">Software Libre</span>
+        <span class="tag">LLMs Locales</span>
+        <span class="tag">LangGraph</span>
+        <span class="tag">Docencia</span>
+      </div>
+      <div class="hero-cta">
+        <a href="#contact" class="btn btn-primary">Contactar</a>
+        <a href="#projects" class="btn btn-outline">Ver proyectos</a>
+      </div>
+    </div>
+
+    <div class="hero-terminal fade-in" style="animation-delay:.2s">
+      <div class="terminal-bar">
+        <span class="dot r"></span>
+        <span class="dot y"></span>
+        <span class="dot g"></span>
+        <span class="terminal-title">bash — ernesto@unpaz:~</span>
+      </div>
+      <div class="terminal-body" id="terminal-output">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ABOUT ══ -->
+  <section id="about">
+    <div>
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Sobre mí</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="about-text fade-in">
+        <p>
+          Soy <strong>Ernesto Aguaysol</strong>, desarrollador de software y docente universitario con base en la 
+          <span class="hl">Universidad Nacional de José C. Paz (UNPAZ)</span>.
+        </p>
+        <p>
+          Mi trabajo se mueve en la intersección entre la <strong>gestión de sistemas de información</strong>,
+          la <strong>inteligencia artificial aplicada</strong> y la filosofía del <strong>software libre</strong>.
+          Creo en la tecnología soberana: código que podemos auditar, desplegar y controlar.
+        </p>
+        <p>
+          Fuera del código, me encontrás en alguna terminal tunando configs de Linux,
+          experimentando con modelos de lenguaje locales (Ollama, Open WebUI)
+          o preparando la próxima clase de Sistemas Inteligentes.
+        </p>
+      </div>
+    </div>
+
+    <div class="about-stats fade-in">
+      <div class="stat-card">
+        <div class="stat-num">10+</div>
+        <div class="stat-label">Años en desarrollo</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">2</div>
+        <div class="stat-label">UUCC universitarias</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Free & Open Source</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Curiosidad técnica</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SKILLS ══ -->
+  <section id="skills">
+    <div class="section-header fade-in">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Stack & Habilidades</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="skills-grid">
+      <div class="skill-card fade-in">
+        <div class="skill-icon">🐧</div>
+        <div class="skill-name">Linux & Sistemas</div>
+        <div class="skill-desc">Administración de servidores, virtualización con Proxmox, contenedores Docker y despliegue self-hosted.</div>
+        <div class="skill-pills">
+          <span class="pill">Debian/Ubuntu</span>
+          <span class="pill">Proxmox</span>
+          <span class="pill">Docker</span>
+          <span class="pill">Dokploy</span>
+          <span class="pill">Nginx</span>
+        </div>
+      </div>
+
+      <div class="skill-card cyan fade-in">
+        <div class="skill-icon">🤖</div>
+        <div class="skill-name">IA & LLMs Locales</div>
+        <div class="skill-desc">Despliegue local de modelos de lenguaje, agentes inteligentes y pipelines de IA soberana.</div>
+        <div class="skill-pills">
+          <span class="pill">Ollama</span>
+          <span class="pill">Open WebUI</span>
+          <span class="pill">LangGraph</span>
+          <span class="pill">LangChain</span>
+          <span class="pill">RAG</span>
+        </div>
+      </div>
+
+      <div class="skill-card amber fade-in">
+        <div class="skill-icon">📊</div>
+        <div class="skill-name">Business Intelligence</div>
+        <div class="skill-desc">Análisis de datos, diseño de reportes y toma de decisiones basada en datos para organizaciones.</div>
+        <div class="skill-pills">
+          <span class="pill">Python</span>
+          <span class="pill">SQL</span>
+          <span class="pill">Pandas</span>
+          <span class="pill">Power BI</span>
+          <span class="pill">Metabase</span>
+        </div>
+      </div>
+
+      <div class="skill-card fade-in">
+        <div class="skill-icon">💻</div>
+        <div class="skill-name">Desarrollo Backend</div>
+        <div class="skill-desc">APIs REST, microservicios y sistemas de información robustos orientados a la gestión institucional.</div>
+        <div class="skill-pills">
+          <span class="pill">Python</span>
+          <span class="pill">FastAPI</span>
+          <span class="pill">Django</span>
+          <span class="pill">PostgreSQL</span>
+          <span class="pill">Redis</span>
+        </div>
+      </div>
+
+      <div class="skill-card cyan fade-in">
+        <div class="skill-icon">🎓</div>
+        <div class="skill-name">Docencia Universitaria</div>
+        <div class="skill-desc">Diseño curricular, dictado de clases y mentoría en BI y Sistemas Inteligentes a nivel universitario.</div>
+        <div class="skill-pills">
+          <span class="pill">Inteligencia de Negocios</span>
+          <span class="pill">Sistemas Inteligentes</span>
+          <span class="pill">UNPAZ</span>
+        </div>
+      </div>
+
+      <div class="skill-card amber fade-in">
+        <div class="skill-icon">🔓</div>
+        <div class="skill-name">Software Libre</div>
+        <div class="skill-desc">Filosofía GNU/Linux, contribución a comunidades open source y promoción de la soberanía tecnológica.</div>
+        <div class="skill-pills">
+          <span class="pill">GNU/Linux</span>
+          <span class="pill">FLOSS</span>
+          <span class="pill">FLISOL</span>
+          <span class="pill">Git</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ EXPERIENCE ══ -->
+  <section id="experience">
+    <div class="section-header fade-in">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Roles & Experiencia</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="exp-list">
+      <div class="exp-item fade-in">
+        <div class="exp-period">
+          Actualidad
+          <span class="org">UNPAZ</span>
+        </div>
+        <div>
+          <div class="exp-role">Coordinador — Depto. de Desarrollo de Sistemas de Información</div>
+          <div class="exp-desc">
+            Dirección del área de desarrollo en la Secretaría de Informática e Innovación Tecnológica de la UNPAZ.
+            Coordinación de proyectos, equipos y <span class="hl">arquitectura de sistemas institucionales</span>.
+          </div>
+        </div>
+      </div>
+
+      <div class="exp-item fade-in">
+        <div class="exp-period">
+          Actualidad
+          <span class="org">UNPAZ</span>
+        </div>
+        <div>
+          <div class="exp-role">Profesor — Inteligencia de Negocios</div>
+          <div class="exp-desc">
+            Unidad Curricular de grado enfocada en análisis de datos, herramientas de BI y toma de decisiones estratégicas basada en información.
+            <span class="hl">Diseño curricular propio</span> con enfoque en herramientas libres.
+          </div>
+        </div>
+      </div>
+
+      <div class="exp-item fade-in">
+        <div class="exp-period">
+          Actualidad
+          <span class="org">UNPAZ</span>
+        </div>
+        <div>
+          <div class="exp-role">Profesor — Sistemas Inteligentes</div>
+          <div class="exp-desc">
+            Unidad Curricular de grado sobre fundamentos y aplicaciones de la inteligencia artificial:
+            modelos de lenguaje, agentes, redes neuronales y <span class="hl">ética en IA</span>.
+          </div>
+        </div>
+      </div>
+
+      <div class="exp-item fade-in">
+        <div class="exp-period">
+          2026
+          <span class="org">FLISOL — UNPAZ</span>
+        </div>
+        <div>
+          <div class="exp-role">Co-presentador — IA Soberana con Software Libre</div>
+          <div class="exp-desc">
+            Charla técnica sobre despliegue local de LLMs con Ollama/Open WebUI y construcción de 
+            <span class="hl">agentes inteligentes con LangGraph</span>, enmarcada en la filosofía del software libre.
+            Co-presentación junto a Maximiliano Castro.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PROJECTS ══ -->
+  <section id="projects">
+    <div class="section-header fade-in">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Proyectos destacados</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="projects-grid">
+      <div class="project-card fade-in">
+        <div class="project-header">
+          <div class="project-icon">🧠</div>
+          <a href="#" class="project-link">ver más →</a>
+        </div>
+        <div class="project-name">IA Soberana en la Universidad</div>
+        <div class="project-desc">
+          Infraestructura de modelos de lenguaje locales para uso institucional en UNPAZ. Despliegue de Ollama + Open WebUI en servidores propios con Proxmox y Dokploy.
+        </div>
+        <div class="project-stack">
+          <span class="pill">Ollama</span>
+          <span class="pill">Open WebUI</span>
+          <span class="pill">Proxmox</span>
+          <span class="pill">Docker</span>
+        </div>
+      </div>
+
+      <div class="project-card fade-in">
+        <div class="project-header">
+          <div class="project-icon">🤖</div>
+          <a href="#" class="project-link">ver más →</a>
+        </div>
+        <div class="project-name">Agentes con LangGraph</div>
+        <div class="project-desc">
+          Construcción de agentes inteligentes usando LangGraph para automatización de flujos académicos y administrativos, integrados con LLMs locales.
+        </div>
+        <div class="project-stack">
+          <span class="pill">LangGraph</span>
+          <span class="pill">LangChain</span>
+          <span class="pill">Python</span>
+          <span class="pill">FastAPI</span>
+        </div>
+      </div>
+
+      <div class="project-card fade-in">
+        <div class="project-header">
+          <div class="project-icon">📊</div>
+          <a href="#" class="project-link">ver más →</a>
+        </div>
+        <div class="project-name">Sistema de BI Institucional</div>
+        <div class="project-desc">
+          Dashboard de inteligencia de negocios para la gestión académica: métricas de cursadas, retención estudiantil y análisis de cohortes.
+        </div>
+        <div class="project-stack">
+          <span class="pill">Python</span>
+          <span class="pill">PostgreSQL</span>
+          <span class="pill">Metabase</span>
+          <span class="pill">Pandas</span>
+        </div>
+      </div>
+
+      <div class="project-card fade-in">
+        <div class="project-header">
+          <div class="project-icon">🐧</div>
+          <a href="#" class="project-link">ver más →</a>
+        </div>
+        <div class="project-name">Infraestructura Self-Hosted</div>
+        <div class="project-desc">
+          Plataforma de despliegue propia basada en Proxmox + KVM + Docker. Alternativa soberana a servicios cloud propietarios para entornos educativos.
+        </div>
+        <div class="project-stack">
+          <span class="pill">Proxmox</span>
+          <span class="pill">Dokploy</span>
+          <span class="pill">Nginx</span>
+          <span class="pill">Certbot</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CONTACT ══ -->
+  <section id="contact">
+    <div class="contact-eyebrow">// hablemos</div>
+    <h2 class="contact-title">¿Trabajamos juntos?</h2>
+    <p class="contact-sub">
+      Abierto a colaboraciones en proyectos de IA soberana, software libre, educación tech o desarrollo de sistemas. 
+      Si compartís la filosofía del código abierto, escribime.
+    </p>
+    <div class="contact-links">
+      <a href="mailto:ernesto@aguaysol.dev" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+        Email
+      </a>
+      <a href="https://github.com/ernestoaguaysol" target="_blank" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        GitHub
+      </a>
+      <a href="https://linkedin.com/in/ernestoaguaysol" target="_blank" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+        </svg>
+        LinkedIn
+      </a>
+      <a href="https://ernestoaguaysol.github.io" target="_blank" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        Web
+      </a>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <div class="f-left">
+      © 2025 <span>Ernesto Aguaysol</span> — Hecho con ♥ y software libre
+    </div>
+    <div class="f-right">
+      <span>ernestoaguaysol.github.io</span>
+    </div>
+  </footer>
+
+  <script>
+    // ── Terminal typewriter ──
+    const lines = [
+      { type: 'cmd',  prompt: 'ernesto@unpaz:~$', text: ' whoami' },
+      { type: 'out',  text: 'ernesto_aguaysol — developer & educator' },
+      { type: 'cmd',  prompt: 'ernesto@unpaz:~$', text: ' cat roles.json' },
+      { type: 'json', text: JSON.stringify({
+          coordinador: "Depto. Sistemas de Información - UNPAZ",
+          docente: ["Inteligencia de Negocios", "Sistemas Inteligentes"],
+          stack: ["Python", "LangGraph", "Ollama", "Linux", "Docker"]
+        }, null, 2)
+      },
+      { type: 'cmd',  prompt: 'ernesto@unpaz:~$', text: ' uname -a' },
+      { type: 'out',  text: 'Linux unpaz 6.x.0 GNU/Linux — free as in freedom 🐧' },
+      { type: 'cmd',  prompt: 'ernesto@unpaz:~$', text: ' _' },
+    ];
+
+    const output = document.getElementById('terminal-output');
+    let lineIdx = 0, charIdx = 0, typing = false;
+
+    function renderLine(line) {
+      const div = document.createElement('div');
+      if (line.type === 'cmd') {
+        div.className = 't-line';
+        div.innerHTML = `<span class="t-prompt">${line.prompt}</span><span class="t-cmd" id="typing-target"></span>`;
+        output.appendChild(div);
+        return document.getElementById('typing-target');
+      } else if (line.type === 'out') {
+        div.className = 't-out';
+        div.textContent = line.text;
+        output.appendChild(div);
+        return null;
+      } else if (line.type === 'json') {
+        const pre = document.createElement('pre');
+        pre.className = 't-out';
+        pre.style.fontSize = '.72rem';
+        // colorize json
+        pre.innerHTML = line.text
+          .replace(/"([^"]+)":/g, '<span class="t-key">"$1"</span>:')
+          .replace(/: "([^"]+)"/g, ': <span class="t-val">"$1"</span>')
+          .replace(/: (\[[^\]]+\])/g, (m, arr) => ': <span class="t-val">' + arr + '</span>');
+        output.appendChild(pre);
+        return null;
+      }
+    }
+
+    function typeNext() {
+      if (lineIdx >= lines.length) return;
+      const line = lines[lineIdx];
+
+      if (line.type === 'cmd' && lineIdx < lines.length - 1) {
+        const target = renderLine(line);
+        const text = line.text;
+        charIdx = 0;
+        const iv = setInterval(() => {
+          if (charIdx < text.length) {
+            target.textContent += text[charIdx++];
+          } else {
+            clearInterval(iv);
+            lineIdx++;
+            setTimeout(typeNext, 300);
+          }
+        }, 45);
+      } else if (line.type === 'cmd' && lineIdx === lines.length - 1) {
+        // last line: show prompt + cursor
+        const div = document.createElement('div');
+        div.className = 't-line';
+        div.innerHTML = `<span class="t-prompt">${line.prompt}</span><span class="cursor"></span>`;
+        output.appendChild(div);
+        lineIdx++;
+      } else {
+        renderLine(line);
+        lineIdx++;
+        setTimeout(typeNext, 120);
+      }
+    }
+
+    setTimeout(typeNext, 600);
+
+    // ── Fade-in on scroll ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
